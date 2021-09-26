@@ -1,0 +1,11 @@
+Assembly-CSharp.csproj
+.vscode/
+Assets/Scenes/
+Logs/
+Packages/
+UserSettings/
+Tiles_and_Paths_v2.sln
+Library/
+ProjectSettings/
+obj/Debug/
+*.meta
