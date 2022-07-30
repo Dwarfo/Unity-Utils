@@ -7,14 +7,14 @@ using UnityEditor;
 namespace RPG.Dialogue
 {
 [Serializable]
-    public class DialogueNode : ScriptableObject
+    public class DialogueNode : ScriptableObject, INode
     {
-        [SerializeField]
-        bool isPlayerSpeaking = false;
         [SerializeField]
         private string uniqueId;
         [SerializeField]
         private string text;
+        [SerializeField]
+        private Speaker speaker;
         [SerializeField]
         private List<string> children = new List<string>();
         [SerializeField]
@@ -25,19 +25,22 @@ namespace RPG.Dialogue
             return rect;
         }
 
-        public string GetText()
-        {
-            return text;
-        }
-
-        public List<string> GetChildren()
+        public IEnumerable<string> GetChildren()
         {
             return children;
         }
 
-        public bool IsPlayerSpeaking()
+        public string Text{get {return text;}}
+        public int ChildrenCount{ get {return children.Count;}}
+        public Speaker SpeakerVal{ get {return speaker;}}
+        public string Id { get {return uniqueId;}}
+        public string Name { get {return name;} set {name = value;}}
+        public Rect RectPos { get {return rect;}}
+        public IEnumerable<string> Children { get {return children;}}
+
+        public bool ChildrenContain(string nodeId)
         {
-            return isPlayerSpeaking;
+            return children.Contains(nodeId);
         }
 
 #if UNITY_EDITOR
@@ -56,11 +59,13 @@ namespace RPG.Dialogue
                 this.text = newText;
                 EditorUtility.SetDirty(this);
             }
-
         }
 
         public void AddChild(string childId)
         {
+            if(!children.Contains(childId)){
+
+            }
             Undo.RecordObject(this, "Added child");
             children.Add(childId);
             EditorUtility.SetDirty(this);
@@ -73,12 +78,18 @@ namespace RPG.Dialogue
             EditorUtility.SetDirty(this);
         }
 
-        public void SetParentSpeaking(bool newIsPlayerSpeaking)
+        public void SetSpeaker(Speaker speaker)
         {
             Undo.RecordObject(this, "Change dialog speaker");
-            this.isPlayerSpeaking = newIsPlayerSpeaking;
+            this.speaker = speaker;
             EditorUtility.SetDirty(this);
         }
 #endif
+
+        public enum Speaker
+        {
+            Player,
+            AI
+        }
     }
 }
