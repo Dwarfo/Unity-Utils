@@ -4,7 +4,7 @@ using UnityEngine;
 
 
 public static class GenMethods{
-    public float[,] Normalize(float[,] toNormalize, float valMin, float valMax){
+    public static float[,] Normalize(float[,] toNormalize, float valMin, float valMax){
 
         int size = toNormalize.GetLength(0);
         float[,] valMatrix = new float[size,size];

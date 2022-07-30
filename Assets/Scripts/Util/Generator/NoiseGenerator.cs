@@ -4,12 +4,14 @@ using UnityEngine;
 
 public class NoiseGenerator : MonoBehaviour
 {
+    public GameObject terrainObj;
     public List<GameObject> tileToWeight;
     public float scale = 1;
     public float constant = 0;
     public float offsetX = 10.1f;
     public float offsetY = 10.1f;
     public int size = 10;
+    public string seed;
 
     private Octave onlyOct;
 
@@ -33,7 +35,7 @@ public class NoiseGenerator : MonoBehaviour
 
         GeneratorArgs gArgs = new GeneratorArgs();
         gArgs.scale = this.scale;
-        gArgs.seed = this.offsetX;
+        gArgs.seed = (float)(seed.GetHashCode() / 100);
         gArgs.threshold = 0.6f;
         gArgs.bias = 0;
 
@@ -53,13 +55,13 @@ public class NoiseGenerator : MonoBehaviour
                 valMatrix[i,j] = val;
 
                 if(valMatrix[i,j] > 0.7f){
-                    Instantiate(tileToWeight[0], new Vector3(i,j,0), Quaternion.identity);
+                    Instantiate(tileToWeight[0], new Vector3(i,j,0), Quaternion.identity).transform.parent = terrainObj.transform;
                 }
                 else if(valMatrix[i,j] > 0.5f){
-                    Instantiate(tileToWeight[1], new Vector3(i,j,0), Quaternion.identity);
+                    Instantiate(tileToWeight[1], new Vector3(i,j,0), Quaternion.identity).transform.parent = terrainObj.transform;
                 }
                 else{
-                    Instantiate(tileToWeight[2], new Vector3(i,j,0), Quaternion.identity);
+                    Instantiate(tileToWeight[2], new Vector3(i,j,0), Quaternion.identity).transform.parent = terrainObj.transform;
                 }
                 
                 yield return null;
@@ -93,7 +95,7 @@ public class NoiseGenerator : MonoBehaviour
                 float val = maskMethod.Execute(gArgs, i , j);
 
                 maskMatrix[i,j] = val;
-                
+                Debug.Log(val);
                 yield return null;
             }
         }
