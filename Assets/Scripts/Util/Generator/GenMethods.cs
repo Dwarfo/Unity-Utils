@@ -27,6 +27,13 @@ public class GetValue : IGeneratorMethod
     }
 }
 
+public class GetValueRaw
+{
+    public float Execute(float scale, float seed, float bias, int i , int j){
+        return Mathf.PerlinNoise((float)i * scale + seed, (float)j * scale + seed) + bias;
+    }
+}
+
 public class GetMaskedVal : IGeneratorMethod
 {
     public float Execute(GeneratorArgs args, int i , int j){
