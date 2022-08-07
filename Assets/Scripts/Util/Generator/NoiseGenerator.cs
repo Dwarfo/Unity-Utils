@@ -17,6 +17,7 @@ public class NoiseGenerator : MonoBehaviour
 
     private Dictionary<string, LayerParameter> nameToParameter;
     private Dictionary<string, float[,]> resultMap;
+    private Dictionary<string, float[,]> maskMap;
 
     private Octave onlyOct;
 
@@ -24,6 +25,7 @@ public class NoiseGenerator : MonoBehaviour
     {
         nameToParameter = new Dictionary<string, LayerParameter>();
         resultMap = new Dictionary<string, float[,]>();
+        maskMap = new Dictionary<string, float[,]>();
         foreach (LayerParameter element in gp.parameters){
             //element.
             nameToParameter.Add(element.layerName, element);
@@ -53,38 +55,27 @@ public class NoiseGenerator : MonoBehaviour
             }
         }
         visualizer.setMatrData(resultMap);
-        //yield return StartCoroutine();   
+        yield return StartCoroutine(GenerateMasks());   
     }
 
-    public IEnumerator GetMask(float[,] valMatrix){
-
-        float valMin = 1;
-        float valMax = 0;
-
-        float[,] maskMatrix = new float[size,size];
-
-        GetMaskVal maskMethod = new GetMaskVal();
-
-        GeneratorArgs gArgs = new GeneratorArgs();
-        gArgs.scale = this.scale;
-        gArgs.seed = this.offsetX;
-        gArgs.biasMatrix = valMatrix;
-        gArgs.threshold = 0.6f;
-        gArgs.bias = 0;
+    public IEnumerator GenerateMasks(){
+        List<LayerParameter> lpList = new List<LayerParameter>();
+        foreach (LayerParameter element in gp.parameters){
+            if(element.generateMask){
+                maskMap.Add(element.layerName, new float[this.size, this.size]);
+                lpList.Add(element);
+            }
+        }
 
         for(int i = 0; i < size; i++){
             for(int j = 0; j < size; j++){
-
-                //place method to do
-                
-                float val = maskMethod.Execute(gArgs, i , j);
-
-                maskMatrix[i,j] = val;
-                Debug.Log(val);
+                foreach (LayerParameter element in lpList){
+                    maskMap[element.layerName][i,j] = resultMap[element.layerName][i,j] > element.maskThreshold ? 1f: 0f;
+                }
                 yield return null;
             }
         }
 
-        visualizer.setData(valMatrix, maskMatrix);
+        visualizer.setMaskData(maskMap);
     }
 }

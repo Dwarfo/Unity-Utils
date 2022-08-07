@@ -25,6 +25,7 @@ public class LayerParameter {
     public string maskToUseName;
     public bool useMask;
     public bool generateMask;
+    public float maskThreshold;
     public float scale;
     public float bias;
     
